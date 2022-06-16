@@ -1,7 +1,212 @@
-const logg=require('./logger.js')
+// Creating GET api using express JS
 
-console.log('Hi, this is my first app')
+// Node basic GET API
+// Step#1: Importing Express JS framework module
 
-logg.chk()
+const express = require('express')
+// By convention object of expressjs should be initialized with Var name 'app', by this action we are creating a server object of express
+const app = express()
 
-logg.chk()
+//This is middleware function used to get body as JSON which we would be using in reading body in POST request
+app.use(express.json())
+
+
+//Importing Joi package for validation which has been installed with NPM
+
+const Joi = require('joi')
+
+// Step#2 
+//API is structured as (route, routehandler)
+//Routehandler is a function which takes two parameters ; 1. req: this param consists data came in request, 2. res. this param consists
+// data being sent back in response
+// app.get('/',(req,res)=>
+// {
+//     res.send('Hello from first get API')
+// }
+// )
+
+
+// // Step#2 : Parameterized GET api
+// app.get('/:id',(req,res)=>
+// {
+//     res.status(200).send('Hello from first get API'+req.params.id)
+
+// }
+// )
+
+
+// // Step#2 : Parameterized GET api
+// app.get('/:id',(req,res)=>
+// {
+//     res.status(200).send('Hello from first get API'+req.params.id)
+
+// }
+// )
+
+// var ages = [{id:1, name: 'Waqas'},
+// {id:2, name: 'Wajahat'}
+// ]
+
+// // Step#2 : Parameterized GET api
+// app.get('/:id',(req,res)=>
+// {
+//     var age=ages.find(c=> c.id ===parseInt( req.params.id))
+
+//     if (!age)
+//     {
+//         res.status(200).send(age+'   '+req.params.id)
+//     }
+// }
+// )
+
+// // Step#2 : Parameterized GET api
+// app.get('/:id',(req,res)=>
+// {
+//     var age=ages.find(c=> c.id ===parseInt( req.params.id))
+
+//     res.status(200).send(age+'   '+req.params.id)
+
+// }
+// )
+
+const courses = [{id:1, name: "Maths"}]
+
+// Step# 2: POST API
+// app.post('/course',(req,res)=>
+// {
+//     const course = {
+//         id: courses.length +1,
+//         name: req.body.name
+//     }
+
+//     courses.push(course)
+
+//     res.send(course)
+
+// }
+// )
+
+
+// Step# 2: POST API with custom validation
+// app.post('/course',(req,res)=>
+// {
+//     if (!req.body.name || req.body.name.length < 3)
+//     {
+//         res.status(404).send('Error in course name')
+//     }
+//     const course = {
+//         id: courses.length +1,
+//         name: req.body.name
+//     }
+
+//     courses.push(course)
+
+//     res.send(course)
+
+// }
+// )
+
+
+// Step# 2 POST Api request with JOI validation
+// JOI is package for validating request
+//  1. Define Schema
+//  2. Validate req.body using schema
+
+// app.post('/course',(req,res)=>
+// {
+//     const schema = Joi.object({
+//         name: Joi.string().required().min(3)
+//     })
+
+//     const result = schema.validate(req.params.name)
+
+//     if (result.error)
+//     {
+//         res.send(result.error)
+//     }
+//     const course = {id : courses.length + 1,
+//     name: req.params.name
+//     }
+
+//     courses.push(course)
+//     res.send(result.error)
+
+// }
+// )
+
+// app.get('/',(req,res)=>
+// {
+//     res.send(200)
+// }
+// )
+
+
+// Step# 2: Creating PUT API and this is update request
+// Content to be changed will come in request body
+// Which record to update will come up in URL to identify
+
+
+// app.put('/api/course/:id',(req,res)=>
+// {
+//     //Step# 1 Find course in datasource which needs to be changed, here we have created a list of dictionary
+
+//     let course = courses.find(c => c.id === parseInt(req.params.id))
+//     console.log(course)
+//     if (!course)
+//     {
+//         res.status(404).send('Course not found')
+//     }
+
+//     // Step# 2 Validate if course exists or not
+
+//     const schema = Joi.object({
+//         name: Joi.string().required().min(3)
+//     })
+
+//     const {error} = schema.validate(req.body)
+
+//     if (error)
+//     {
+//         res.status(400).send(error+'Course name is not valid')
+//     }
+
+//     course.name = req.body.name
+//     console.log(course.name)
+//     console.log(courses)
+//     res.status(200).send(course)
+
+// }
+// )
+
+// Step #2: Deleting a record from dataset using DELETE requests
+
+app.delete('/api/courses/:id',(req,res)=>
+{
+    const course = courses.find(c=> c.id === parseInt(req.params.id))
+    console.log(course)
+    console.log(courses)
+    if (!course)
+    {
+        res.status(404).send('Course not found to be deleted')
+    }
+
+    const index = courses.indexOf(course)
+    courses.splice(index,1)
+
+    res.status(200).send(course + 'Deleted')
+
+}
+)
+
+
+// Best Practice: Never trust what comes in body of request, always validate
+// Validation package: JOI, AJV or with custom written logic
+
+// setting port from ENV variables
+
+// const port =process.env.PORT || 3001
+
+//Step# 3: Server must listen on some port
+app.listen(3000)
+
+
