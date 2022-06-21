@@ -10,7 +10,7 @@ const app = express()
 //This is middleware function used to get body as JSON which we would be using in reading body in POST request
 app.use(express.json())
 
-
+const logger = require('./logger')
 //Importing Joi package for validation which has been installed with NPM
 
 const Joi = require('joi')
@@ -178,7 +178,17 @@ const courses = [{id:1, name: "Maths"}]
 // }
 // )
 
+app.use(function(req,res,next)
+{
+    console.log('Logging from middleware')
+    next()
+}
+)
+
+app.use(logger) //using custom middleware function
+
 // Step #2: Deleting a record from dataset using DELETE requests
+
 
 app.delete('/api/courses/:id',(req,res)=>
 {

@@ -1,6 +1,9 @@
-function hello()
+// Custom Middleware function
+
+function log(req,res,next)
 {
-    console.log('His')
+    console.log('Logging from Custom function')
+    next()
 }
 
-module.exports.chk=hello
+module.exports = log
