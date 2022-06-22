@@ -10,29 +10,48 @@ const app = express()
 //This is middleware function used to get body as JSON which we would be using in reading body in POST request
 app.use(express.json())
 
+//importing a module placed on root folder of project and this returns a function
 const logger = require('./logger')
-//Importing Joi package for validation which has been installed with NPM
 
+//Importing Joi package for validation which has been installed with NPM
 const Joi = require('joi')
+
+//Importing third party middleware morgan - for http logging and helmet
+const morgan = require('morgan')
+const helmet = require('helmet')
+
+//using third party middleware functions
+
+app.use(function(req,res,next)
+{
+    console.log('Logging from middleware')
+    next()
+}
+)
+
+app.use(logger) //using custom middleware function
+
+app.use(morgan('tiny'))
+
 
 // Step#2 
 //API is structured as (route, routehandler)
 //Routehandler is a function which takes two parameters ; 1. req: this param consists data came in request, 2. res. this param consists
 // data being sent back in response
-// app.get('/',(req,res)=>
-// {
-//     res.send('Hello from first get API')
-// }
-// )
+app.get('/',(req,res)=>
+{
+    res.send('Hello from first get API')
+}
+)
 
 
 // // Step#2 : Parameterized GET api
-// app.get('/:id',(req,res)=>
-// {
-//     res.status(200).send('Hello from first get API'+req.params.id)
+app.get('/:id',(req,res)=>
+{
+    res.status(200).send('Hello from first get API'+req.params.id)
 
-// }
-// )
+}
+)
 
 
 // // Step#2 : Parameterized GET api
@@ -112,27 +131,27 @@ const courses = [{id:1, name: "Maths"}]
 //  1. Define Schema
 //  2. Validate req.body using schema
 
-// app.post('/course',(req,res)=>
-// {
-//     const schema = Joi.object({
-//         name: Joi.string().required().min(3)
-//     })
+app.post('/course',(req,res)=>
+{
+    const schema = Joi.object({
+        name: Joi.string().required().min(3)
+    })
 
-//     const result = schema.validate(req.params.name)
+    const result = schema.validate(req.params.name)
 
-//     if (result.error)
-//     {
-//         res.send(result.error)
-//     }
-//     const course = {id : courses.length + 1,
-//     name: req.params.name
-//     }
+    if (result.error)
+    {
+        res.send(result.error)
+    }
+    const course = {id : courses.length + 1,
+    name: req.params.name
+    }
 
-//     courses.push(course)
-//     res.send(result.error)
+    courses.push(course)
+    res.send(result.error)
 
-// }
-// )
+}
+)
 
 // app.get('/',(req,res)=>
 // {
@@ -146,46 +165,38 @@ const courses = [{id:1, name: "Maths"}]
 // Which record to update will come up in URL to identify
 
 
-// app.put('/api/course/:id',(req,res)=>
-// {
-//     //Step# 1 Find course in datasource which needs to be changed, here we have created a list of dictionary
-
-//     let course = courses.find(c => c.id === parseInt(req.params.id))
-//     console.log(course)
-//     if (!course)
-//     {
-//         res.status(404).send('Course not found')
-//     }
-
-//     // Step# 2 Validate if course exists or not
-
-//     const schema = Joi.object({
-//         name: Joi.string().required().min(3)
-//     })
-
-//     const {error} = schema.validate(req.body)
-
-//     if (error)
-//     {
-//         res.status(400).send(error+'Course name is not valid')
-//     }
-
-//     course.name = req.body.name
-//     console.log(course.name)
-//     console.log(courses)
-//     res.status(200).send(course)
-
-// }
-// )
-
-app.use(function(req,res,next)
+app.put('/api/course/:id',(req,res)=>
 {
-    console.log('Logging from middleware')
-    next()
+    //Step# 1 Find course in datasource which needs to be changed, here we have created a list of dictionary
+
+    let course = courses.find(c => c.id === parseInt(req.params.id))
+    console.log(course)
+    if (!course)
+    {
+        res.status(404).send('Course not found')
+    }
+
+    // Step# 2 Validate if course exists or not
+
+    const schema = Joi.object({
+        name: Joi.string().required().min(3)
+    })
+
+    const {error} = schema.validate(req.body)
+
+    if (error)
+    {
+        res.status(400).send(error+'Course name is not valid')
+    }
+
+    course.name = req.body.name
+    console.log(course.name)
+    console.log(courses)
+    res.status(200).send(course)
+
 }
 )
 
-app.use(logger) //using custom middleware function
 
 // Step #2: Deleting a record from dataset using DELETE requests
 
