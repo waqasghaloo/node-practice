@@ -7,6 +7,7 @@ const express = require('express')
 // By convention object of expressjs should be initialized with Var name 'app', by this action we are creating a server object of express
 const app = express()
 
+const config = require('config')
 //This is middleware function used to get body as JSON which we would be using in reading body in POST request
 app.use(express.json())
 
@@ -31,7 +32,6 @@ app.use(function(req,res,next)
 
 app.use(logger) //using custom middleware function
 
-app.use(morgan('tiny'))
 
 
 // Step#2 
@@ -218,6 +218,43 @@ app.delete('/api/courses/:id',(req,res)=>
 
 }
 )
+
+// Enviroment: As organization run code in different enviroment so to get in which enviroment code is running, there are two ways
+// 1. Using 'process' global object of node - process.env.NODE_ENV, this will return undefined if not set
+// 2. Using app.get - app.get('env') - this will return development if not set
+
+console.log(`Node Env process: ${process.env.NODE_ENV}`)
+console.log(`Node Env app    : ${app.get('env')}`)
+
+
+// When we want to run some code snippet in Development enviroment only, we can just put code in below like condition.
+// Standard enviroments: development, testing, staging or production 
+// To change enviroment, we can do it from Shell script - using command in linux (export NODE_ENV = production)
+if (app.get('env')=== 'development')
+{
+    app.use(morgan('tiny'))
+    console.log('Running in Development Env')
+
+}
+
+// Every enviroment requires different settings/configurations and need to override in each enviroment depending on enviroment
+// rc, config packages of node are good for managing configurations/settings for every enviroment
+// install config package using - npm i -g config
+// configuration for development, production and rest of standard enviroment could be saved using this approach and this is good approach
+// Step# 1: Create folder in project named as 'config'
+// Step# 2: Create default.json file in config 
+// Step# 3: Create configuration file for each enviroment seperatly, such as, development.json (this file will consist of json object)
+// Steo# 4: Accessing property of configuration using below way
+
+console.log("Application Name: "+config.get('name'))
+
+// Accessing nested property from configuration using dot notation
+
+console.log(`Application Name ${config.get('mail server.server')}`)
+
+// {"Name": "My app express - production",
+// "mail server":{ "server": "linux"}}
+
 
 
 // Best Practice: Never trust what comes in body of request, always validate
